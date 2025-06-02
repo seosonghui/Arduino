@@ -84,19 +84,19 @@ int state = 0;
 
 void setup()
 {
-  Serial.begin(9600);
-  pinMode(BUTTON, INPUT_PULLUP);
+  Serial.begin(9600); // 시리얼 통신 시작 (디버깅용)
+  pinMode(BUTTON, INPUT_PULLUP); // 버튼을 내부 풀업으로 설정
   pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 }
 
 void loop()
 {
-  int buttonValue = !digitalRead(BUTTON);
+  int buttonValue = !digitalRead(BUTTON); // 버튼 눌림 여부 감지
   
   if(buttonValue == 1)
   {
-    state = !state;
+    state = !state; // 상태 토글: 0 → 1 또는 1 → 0
     delay(500);
   }
   
