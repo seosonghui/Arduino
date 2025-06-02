@@ -215,3 +215,6 @@ void loop() {
   else if(cnt == 3) analogWrite(LED_PIN, 255);   
 }
 ```
+## Reference
+- 만들면서 배우는 아두이노와 40개의 작품들. 장문철, 앤써북
+
