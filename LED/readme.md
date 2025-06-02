@@ -165,3 +165,20 @@ void loop() {
   delay(500);
 }
 ```
+## LED 스탠드 만들기_가변저항 사용
+![](./images/led05.png)
+```c
+#define LED 9
+#define VR A0
+
+void setup(){
+  Serial.begin(9600);
+}
+
+void loop(){
+  int analogValue = analogRead(VR);
+  int analogMapping = map(analogValue, 0, 1023, 0, 255);
+  
+  analogWrite(LED, analogMapping);
+}
+```
