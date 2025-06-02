@@ -44,10 +44,9 @@ void loop()
   }
 }
 ```
-## LED 3등
+## 3개의 LED 깜박이기
 ![](./images/led01.png)
 
-## LED 3등
 ```C
 #define LED1 8
 #define LED2 7
