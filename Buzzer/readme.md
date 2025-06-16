@@ -146,7 +146,25 @@ void loop()
   seconds += 1;
 }
 ```
+```C
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void setup()
+{
+  lcd.init(); //LCD 초기화
+  lcd.backlight();  //백라이트 켜기
+  lcd.print("Hello, I2C");
+}
+
+void loop()
+{
+}
+```
+### 깜빡임 포함
 ```C
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
