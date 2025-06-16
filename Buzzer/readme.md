@@ -306,6 +306,7 @@ unsigned long prevTime = 0;
 unsigned int gameTime = 30;
 
 void setup() {
+  lcd.init();
   pinMode(BUTTON_1P, INPUT_PULLUP);
   pinMode(BUTTON_2P, INPUT_PULLUP);
   pinMode(BUTTON_START, INPUT_PULLUP);
