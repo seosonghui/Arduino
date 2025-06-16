@@ -511,6 +511,7 @@ void loop()
 ```
 
 ## 초음파 센서(3pin)
+![](./images/sig.png)
 ```c
 /* 3핀 초음파센서 활용 */
 int ultra = 7; // 출력 단자
@@ -544,5 +545,62 @@ void loop(){
   Serial.print(dist);
   Serial.println("cm");
   delay(100);
+}
+```
+
+## 초음파 센서(4pin)
+![](./images/trig.png)
+```c
+/*거리에 따라 LED 표시*/
+
+int trig = 2;          
+int echo = 3;
+int RED = 8;       
+int YELLOW = 9;     
+int GREEN = 10;    
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
+  pinMode(RED, OUTPUT);     
+  pinMode(YELLOW, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+}
+
+void loop()
+{
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+
+  // echoPin 이 HIGH를 유지한 시간을 저장 한다.
+  unsigned long duration = pulseIn(echo, HIGH); 
+  // HIGH 였을 때 시간(초음파가 보냈다가 다시 들어온 시간)을 가지고 거리를 계산 한다.
+  float distance = ((float)(340 * duration) / 10000) / 2;  
+  
+  Serial.print(distance);
+  Serial.println("cm");
+  delay(100);
+  
+  if (distance > 80)  //   distance(거리) 가 80보다 크면
+  {
+    digitalWrite(GREEN, HIGH);     // GREEN이 연결된 핀에 HIGH 신호(5V)를,
+    digitalWrite(YELLOW, LOW);    // YELLOW가 연결된 핀에 LOW 신호(0V)를,
+    digitalWrite(RED, LOW);       // RED가 연결된 핀에 LOW신호(0V)를.
+  }
+  if (distance > 30 & distance <= 70)  
+  {
+    digitalWrite(GREEN, LOW);   
+    digitalWrite(YELLOW, HIGH);
+    digitalWrite(RED, LOW);
+  }
+  if (distance > 0 & distance <= 30)
+  {
+    digitalWrite(GREEN, LOW);
+    digitalWrite(YELLOW, LOW);
+    digitalWrite(RED, HIGH);
+  }
 }
 ```
