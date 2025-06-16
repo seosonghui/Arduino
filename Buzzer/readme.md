@@ -452,3 +452,97 @@ void adjustBrightness()
 ```
 
 ## 온도 센서 : TMP36 - 1
+![](./images/tmp.png)
+```c
+int baselineTemp = 0;
+
+int celsius = 0;
+
+int fahrenheit = 0;
+
+void setup()
+{
+  pinMode(A0, INPUT);
+  Serial.begin(9600);
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+}
+
+void loop()
+{
+  // set threshold temperature to activate LEDs
+  baselineTemp = 40;
+  // measure temperature in Celsius
+  celsius = map(((analogRead(A0) - 20) * 3.04), 0, 1023, -40, 125);
+  // convert to Fahrenheit
+  fahrenheit = ((celsius * 9) / 5 + 32);
+  Serial.print(celsius);
+  Serial.print(" C, ");
+  Serial.print(fahrenheit);
+  Serial.println(" F");
+  if (celsius < baselineTemp) {
+    digitalWrite(2, LOW);
+    digitalWrite(3, LOW);
+    digitalWrite(4, LOW);
+  }
+  if (celsius >= baselineTemp && celsius < baselineTemp + 10) {
+    digitalWrite(2, HIGH);
+    digitalWrite(3, LOW);
+    digitalWrite(4, LOW);
+  }
+  if (celsius >= baselineTemp + 10 && celsius < baselineTemp + 20) {
+    digitalWrite(2, HIGH);
+    digitalWrite(3, HIGH);
+    digitalWrite(4, LOW);
+  }
+  if (celsius >= baselineTemp + 20 && celsius < baselineTemp + 30) {
+    digitalWrite(2, HIGH);
+    digitalWrite(3, HIGH);
+    digitalWrite(4, HIGH);
+  }
+  if (celsius >= baselineTemp + 30) {
+    digitalWrite(2, HIGH);
+    digitalWrite(3, HIGH);
+    digitalWrite(4, HIGH);
+  }
+  delay(1000); // Wait for 1000 millisecond(s)
+}
+```
+
+## 초음파 센서(3pin)
+```c
+/* 3핀 초음파센서 활용 */
+int ultra = 7; // 출력 단자
+
+void setup(){
+  Serial.begin(9600);
+}
+void loop(){
+  pinMode(ultra, OUTPUT);  
+  //sig핀 기본출력설정
+  digitalWrite(ultra, LOW);
+  delay(1); // Wait for 100 millisecond(s), 
+  
+  digitalWrite(ultra, HIGH);
+  delayMicroseconds(10);//센서를 동작하기 위한 시작신호로
+  // sig핀에 5us동안 high신호 출력후 low출력
+  digitalWrite(ultra, LOW);
+  
+  pinMode(ultra, INPUT);  
+  
+  //ultra 핀이 HIGH를 유지한 시간을 저장
+  unsigned long duration = pulseIn(ultra, HIGH);
+  
+  //HIGH였을땨 시간(초음파가 보냈다가 다시 돌아온 시간)을 가지고 거리계산
+  //초음파는 340m/s속도로 이동함에 따라(25도씨 기준)
+  //이때 속도와 센서가 보낸 시간을 이용하여 거리를 계산
+  //왕복해서 오는것이므로 결과를 2로 나누어 줌
+  double dist = ((340*duration)/10000)/2;
+    
+  Serial.print("Distance:  ");
+  Serial.print(dist);
+  Serial.println("cm");
+  delay(100);
+}
+```
