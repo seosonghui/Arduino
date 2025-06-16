@@ -382,3 +382,73 @@ int buttonStart() {
   return 0;
 }
 ```
+## 포토 레지스터 : 빛 센서(CDS)
+![](./images/cds.png)
+```c
+void setup()
+{
+  pinMode(9, OUTPUT); 
+}
+
+void loop()
+{
+  int val1 = analogRead(0);
+  int val2 = map(val1, 0, 1023, 0, 255);
+  
+  analogWrite(9, val2);
+  delay(20);
+}
+```
+
+```c
+int sensorValue = 0;
+
+void setup()
+{
+  pinMode(A0, INPUT);
+  Serial.begin(9600);
+  pinMode(9, OUTPUT);
+}
+
+void loop()
+{
+  // read the value from the sensor
+  sensorValue = analogRead(A0);
+  // print the sensor reading so you know its range
+  Serial.println(sensorValue);
+  // map the sensor reading to a range for the LED
+  analogWrite(9, map(sensorValue, 0, 1023, 0, 255));
+  delay(100); // Wait for 100 millisecond(s)
+}
+```
+
+```c
+int sensorPin = A0;  //아날로그 핀은 입력 명시하지 않아도 됨.
+int ledPin = 9;  // PWM
+int lightLevel;
+
+
+void setup()
+{
+    pinMode(ledPin, OUTPUT); 
+}
+
+
+void loop()
+{
+    lightLevel = analogRead(sensorPin); 
+    adjustBrightness(); //LED 밝기 조절 함수
+    analogWrite(ledPin, lightLevel); 
+}
+
+
+void adjustBrightness()
+{
+    lightLevel = map(lightLevel, 500, 1023, 0, 255);
+    lightLevel = constrain(lightLevel, 0, 255);
+      //lightlevel이 0보다 작으면 0을 출력 
+      //255보다 크면 255를 출력, 0~255사이의 숫자면 그대로 출력
+}
+```
+
+## 온도 센서 : TMP36 - 1
