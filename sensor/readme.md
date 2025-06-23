@@ -1,5 +1,6 @@
 # sensor예제
 ## DC Motor
+![](./images/DCmotor.png)
 ```c
 void setup() 
 {
