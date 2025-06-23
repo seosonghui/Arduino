@@ -159,6 +159,49 @@ void speedControl() {
 	digitalWrite(in4, LOW);
 }
 ```
+## DC Motor with Encoder
+![](./images/encoder.png)
+```c
+#include <Encoder.h>           // 엔코더 라이브러리 포함
+
+Encoder encoder(2, 3);         // 핀 2, 3번에 엔코더 연결 (UNO에서는 반드시 2, 3 사용)
+
+long position = 0;             // 현재 모터 위치 (10스텝 당 1회전이라고 가정)
+int rotation = 0;              // 회전 수 저장 변수
+
+void setup()
+{
+  Serial.begin(9600);          // 시리얼 통신 시작 (9600bps)
+  
+  pinMode(5, OUTPUT);          // 모터 제어 핀 5번을 출력으로 설정
+  pinMode(6, OUTPUT);          // 모터 제어 핀 6번을 출력으로 설정
+}
+
+void loop()
+{
+  // 모터를 한 방향으로 회전 (5번 핀에 PWM 신호, 6번 핀 LOW)
+  analogWrite(5, 30);          // 모터에 30/255 속도로 회전 명령
+  analogWrite(6, 0);
+
+  // 엔코더에서 현재 위치값을 읽고 10으로 나눠 위치 단순화
+  position = encoder.read() / 10;
+
+  // 회전 수 계산 (절대값 사용, 10 스텝 = 1회전으로 가정)
+  rotation = abs(position) / 10;
+
+  // 현재 위치 출력
+  Serial.print("pos: ");
+  Serial.println(position);
+
+  // 현재까지의 회전 수 출력
+  Serial.print("rot: ");
+  Serial.println(rotation);
+}
+
+```
+## Vibrator Motor
+![](./images/vmotor.png)
+
 ## Micro Servo
 ![](./images/servo.png)
 ```c
@@ -270,3 +313,79 @@ void loop() {
 }
 
 ```
+
+## 7-segment display(ca): Count Down Alarm
+![](./images/7seg.png)
+```c
+int index = 0;       // LED 핀 인덱스용 변수
+int counter;         // 루프 카운터 변수
+
+// 숫자 0~9를 나타내는 LED ON/OFF 패턴 (8비트 문자열)
+String pattern[] = {
+  "00100001",   // 0
+  "11111001",   // 1
+  "00010011",   // 2
+  "01010001",   // 3
+  "11001001",   // 4
+  "01000101",   // 5
+  "00000105",   // 6
+  "11110001",   // 7
+  "00000001",   // 8
+  "01000001"    // 9
+};
+
+// 모든 LED를 꺼주는 함수
+void clear() {
+  index = 0;
+  for (counter = 0; counter < 8; ++counter) {
+    analogWrite(index + 2, 255);  // 밝기를 최대 → OFF로 간주
+    index++;
+  }
+}
+
+// 숫자를 받아서 해당 숫자 패턴으로 LED를 표시
+void display(int num) {
+  clear();  // 먼저 LED 초기화
+  index = 0;
+  for (counter = 0; counter < 8; ++counter) {
+    if (pattern[num].substring(index, index + 1) == "0") {
+      analogWrite(index + 2, 0);   // 해당 자리가 0이면 LED 켜기
+    }
+    index++;
+  }
+}
+
+void setup() {
+  // 2~9번 핀을 출력으로 설정 (총 8개의 LED 제어)
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+
+  // 숫자 9부터 0까지 1초씩 표시
+  display(9); delay(1000);
+  display(8); delay(1000);
+  display(7); delay(1000);
+  display(6); delay(1000);
+  display(5); delay(1000);
+  display(4); delay(1000);
+  display(3); delay(1000);
+  display(2); delay(1000);
+  display(1); delay(1000);
+  display(0); delay(1000);
+
+  // 마지막에 소리 재생 (도 음, 523Hz, 0.5초)
+  tone(10, 523, 500);
+}
+
+void loop() {
+  // 반복 동작 없음
+}
+
+```
+
+
