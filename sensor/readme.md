@@ -390,4 +390,224 @@ void loop() {
 
 ```
 
+## MISA 7-Segment 4-Digit LED Display
+![](./images/7seg2.png)
+```c
+/* 6-13-2011  Spark Fun Electronics 2011  -- Nathan Seidle */
+
+// 4자리 7-세그먼트 공통 애노드(또는 캐소드) 디스플레이 제어용 핀 설정
+int digit1 = 13; // 첫 번째 자리 제어 핀
+int digit2 = 12; // 두 번째 자리 제어 핀
+int digit3 = 11; // 세 번째 자리 제어 핀
+int digit4 = 10; // 네 번째 자리 제어 핀
+
+// 7-세그먼트 각 세그먼트 핀 매핑
+int segA = 7;  // 세그먼트 A
+int segB = 6;  // 세그먼트 B
+int segC = 3;  // 세그먼트 C
+int segD = 4;  // 세그먼트 D
+int segE = 5;  // 세그먼트 E
+int segF = 8;  // 세그먼트 F
+int segG = 9;  // 세그먼트 G
+int segDP = 2; // 소수점 세그먼트 (사용 안 함)
+
+void setup() {                
+  // 세그먼트 핀들을 출력으로 설정
+  pinMode(segA, OUTPUT);
+  pinMode(segB, OUTPUT);
+  pinMode(segC, OUTPUT);
+  pinMode(segD, OUTPUT);
+  pinMode(segE, OUTPUT);
+  pinMode(segF, OUTPUT);
+  pinMode(segG, OUTPUT);
+
+  // 자리 선택 핀들을 출력으로 설정
+  pinMode(digit1, OUTPUT);
+  pinMode(digit2, OUTPUT);
+  pinMode(digit3, OUTPUT);
+  pinMode(digit4, OUTPUT);
+
+  pinMode(13, OUTPUT);  // 내장 LED (사용하지 않음)
+}
+
+void loop() 
+{
+  // 아날로그 입력 A5핀(=5)에서 값을 읽어 7-세그먼트에 표시
+  displayNumber( analogRead(5) );
+}
+
+void displayNumber(int toDisplay) {
+  #define DISPLAY_BRIGHTNESS  500  // 각 자리 표시 시간(마이크로초)
+
+  #define DIGIT_ON  HIGH   // 자리 선택 핀 켜기
+  #define DIGIT_OFF  LOW   // 자리 선택 핀 끄기
+
+  long beginTime = millis();
+
+  // 4자리 각각을 빠르게 반복해서 켜서 숫자 표시 (다중화)
+  for(int digit = 4 ; digit > 0 ; digit--) {
+
+    // 현재 자리 켜기
+    switch(digit) {
+      case 1:
+        digitalWrite(digit1, DIGIT_ON);
+        break;
+      case 2:
+        digitalWrite(digit2, DIGIT_ON);
+        break;
+      case 3:
+        digitalWrite(digit3, DIGIT_ON);
+        break;
+      case 4:
+        digitalWrite(digit4, DIGIT_ON);
+        break;
+    }
+
+    // toDisplay의 마지막 자리 숫자를 표시 (0~9)
+    lightNumber(toDisplay % 10);
+
+    // 표시할 숫자에서 마지막 자리 제거
+    toDisplay /= 10;
+
+    // 현재 자리 표시 유지 (지연시간, 밝기 조절용)
+    delayMicroseconds(DISPLAY_BRIGHTNESS);
+
+    // 모든 세그먼트 끄기
+    lightNumber(10);
+
+    // 모든 자리 끄기
+    digitalWrite(digit1, DIGIT_OFF);
+    digitalWrite(digit2, DIGIT_OFF);
+    digitalWrite(digit3, DIGIT_OFF);
+    digitalWrite(digit4, DIGIT_OFF);
+  }
+
+  // 약 10ms 동안 대기해서 화면 깜빡임 방지
+  while( (millis() - beginTime) < 10) ;
+}
+
+// 숫자에 따라 7-세그먼트 각 세그먼트 켜기/끄기
+// numberToDisplay가 10이면 모두 끄기
+void lightNumber(int numberToDisplay) {
+
+  #define SEGMENT_ON  LOW    // 세그먼트 켜기 (공통 애노드일 경우 LOW)
+  #define SEGMENT_OFF HIGH   // 세그먼트 끄기
+
+  switch (numberToDisplay){
+
+    case 0:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_ON);
+      digitalWrite(segE, SEGMENT_ON);
+      digitalWrite(segF, SEGMENT_ON);
+      digitalWrite(segG, SEGMENT_OFF);
+      break;
+
+    case 1:
+      digitalWrite(segA, SEGMENT_OFF);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_OFF);
+      digitalWrite(segE, SEGMENT_OFF);
+      digitalWrite(segF, SEGMENT_OFF);
+      digitalWrite(segG, SEGMENT_OFF);
+      break;
+
+    case 2:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_OFF);
+      digitalWrite(segD, SEGMENT_ON);
+      digitalWrite(segE, SEGMENT_ON);
+      digitalWrite(segF, SEGMENT_OFF);
+      digitalWrite(segG, SEGMENT_ON);
+      break;
+
+    case 3:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_ON);
+      digitalWrite(segE, SEGMENT_OFF);
+      digitalWrite(segF, SEGMENT_OFF);
+      digitalWrite(segG, SEGMENT_ON);
+      break;
+
+    case 4:
+      digitalWrite(segA, SEGMENT_OFF);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_OFF);
+      digitalWrite(segE, SEGMENT_OFF);
+      digitalWrite(segF, SEGMENT_ON);
+      digitalWrite(segG, SEGMENT_ON);
+      break;
+
+    case 5:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_OFF);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_ON);
+      digitalWrite(segE, SEGMENT_OFF);
+      digitalWrite(segF, SEGMENT_ON);
+      digitalWrite(segG, SEGMENT_ON);
+      break;
+
+    case 6:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_OFF);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_ON);
+      digitalWrite(segE, SEGMENT_ON);
+      digitalWrite(segF, SEGMENT_ON);
+      digitalWrite(segG, SEGMENT_ON);
+      break;
+
+    case 7:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_OFF);
+      digitalWrite(segE, SEGMENT_OFF);
+      digitalWrite(segF, SEGMENT_OFF);
+      digitalWrite(segG, SEGMENT_OFF);
+      break;
+
+    case 8:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_ON);
+      digitalWrite(segE, SEGMENT_ON);
+      digitalWrite(segF, SEGMENT_ON);
+      digitalWrite(segG, SEGMENT_ON);
+      break;
+
+    case 9:
+      digitalWrite(segA, SEGMENT_ON);
+      digitalWrite(segB, SEGMENT_ON);
+      digitalWrite(segC, SEGMENT_ON);
+      digitalWrite(segD, SEGMENT_ON);
+      digitalWrite(segE, SEGMENT_OFF);
+      digitalWrite(segF, SEGMENT_ON);
+      digitalWrite(segG, SEGMENT_ON);
+      break;
+
+    case 10:  // 숫자 끄기 (모든 세그먼트 끄기)
+      digitalWrite(segA, SEGMENT_OFF);
+      digitalWrite(segB, SEGMENT_OFF);
+      digitalWrite(segC, SEGMENT_OFF);
+      digitalWrite(segD, SEGMENT_OFF);
+      digitalWrite(segE, SEGMENT_OFF);
+      digitalWrite(segF, SEGMENT_OFF);
+      digitalWrite(segG, SEGMENT_OFF);
+      break;
+  }
+}
+
+```
+
+
 
