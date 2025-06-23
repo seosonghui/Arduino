@@ -313,6 +313,8 @@ void loop() {
 }
 
 ```
+## Hobby Gearmotor
+![](./images/hobby.png)
 
 ## 7-segment display(ca): Count Down Alarm
 ![](./images/7seg.png)
