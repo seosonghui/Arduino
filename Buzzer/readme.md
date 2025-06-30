@@ -642,7 +642,6 @@ void loop() {
 ## Ultrasonic sensor with LCD and Buzzer - 2
 ![](./images/lcdbuzzer.png)
 ```c
-```c
 // C++ code
 //
 #include <Adafruit_LiquidCrystal.h>
