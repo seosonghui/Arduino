@@ -4,17 +4,23 @@
 ```c
 void setup() 
 {
-  pinMode(9, OUTPUT);
+  pinMode(9, OUTPUT); // 9번 핀을 출력 모드로 설정 (PWM 신호 출력용)
 }
+
 void loop()
 {
-  Serial.begin(9600);
-  int inputValue = analogRead(A0);
-  Serial.println(inputValue);
+  Serial.begin(9600); // 시리얼 통신 시작 (속도: 9600bps)
+
+  int inputValue = analogRead(A0); // 아날로그 입력 A0 핀에서 값을 읽음 (0~1023 범위)
+  Serial.println(inputValue);      // 읽은 값을 시리얼 모니터에 출력
+
+  // 입력값(0~1023)을 PWM 출력 범위(0~255)로 변환
   int convertedValue = map(inputValue, 0, 1023, 0, 255);
 
+  // 변환된 값을 9번 핀에 PWM 신호로 출력 (예: LED 밝기 조절, 모터 속도 조절)
   analogWrite(9, convertedValue);
-  delay(100);
+
+  delay(100); // 100ms 대기 (반응 속도 조절용)
 }
 ```
 ![](./images/DCmotor2.png)
@@ -45,119 +51,126 @@ void loop()
 ```
 ![](./images/DCmotor3.png)
 ```c
-const int MOTOR_PIN_A = 5;
-const int MOTOR_PIN_B = 6;
+// 모터 제어 핀 정의
+const int MOTOR_PIN_A = 5;  // 모터 제어용 PWM 핀 A
+const int MOTOR_PIN_B = 6;  // 모터 제어용 PWM 핀 B
 
 void setup() 
 {
+  // 모터 제어 핀을 출력으로 설정
   pinMode(MOTOR_PIN_A, OUTPUT);
   pinMode(MOTOR_PIN_B, OUTPUT);
 }
+
 void loop()
 {
+  // 디지털 입력 핀 4에서 값을 읽음 (예: 버튼이나 센서)
   int readValue = digitalRead(4);
 
+  // 입력값이 LOW(0)일 때
   if(readValue == LOW) {	
-    analogWrite(MOTOR_PIN_A, 255);
-    analogWrite(MOTOR_PIN_B, 0);   // B측은 0 → 모터 한 방향 회전
+    analogWrite(MOTOR_PIN_A, 255); // A핀에 최대 출력 (모터 한 방향 회전)
+    analogWrite(MOTOR_PIN_B, 0);   // B핀은 정지
   }
   else {
-    analogWrite(MOTOR_PIN_A, 0);
-    analogWrite(MOTOR_PIN_B, 255);  //반대방향
+    analogWrite(MOTOR_PIN_A, 0);   // A핀은 정지
+    analogWrite(MOTOR_PIN_B, 255); // B핀에 최대 출력 (모터 반대 방향 회전)
   }   
-  delay(100);
+
+  delay(100);  // 100ms 대기 (너무 빠른 전환 방지용)
 }
 ```
 ![](./images/DCmotor4.png)
 ```c
-// Motor A connections
-int enA = 9;
-int in1 = 8;
-int in2 = 7;
-// Motor B connections
-int enB = 3;
-int in3 = 5;
-int in4 = 4;
+// 모터 A 연결 핀 설정
+int enA = 9;   // 모터 A 속도 제어 핀 (PWM)
+int in1 = 8;   // 모터 A 방향 제어 핀 1
+int in2 = 7;   // 모터 A 방향 제어 핀 2
+
+// 모터 B 연결 핀 설정
+int enB = 3;   // 모터 B 속도 제어 핀 (PWM)
+int in3 = 5;   // 모터 B 방향 제어 핀 1
+int in4 = 4;   // 모터 B 방향 제어 핀 2
 
 void setup() {
-	// Set all the motor control pins to outputs
-	pinMode(enA, OUTPUT);
-	pinMode(enB, OUTPUT);
-	pinMode(in1, OUTPUT);
-	pinMode(in2, OUTPUT);
-	pinMode(in3, OUTPUT);
-	pinMode(in4, OUTPUT);
-	
-	// Turn off motors - Initial state
-	digitalWrite(in1, LOW);
-	digitalWrite(in2, LOW);
-	digitalWrite(in3, LOW);
-	digitalWrite(in4, LOW);
+  // 모든 모터 제어 핀을 출력 모드로 설정
+  pinMode(enA, OUTPUT);
+  pinMode(enB, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+
+  // 모터 정지 상태로 초기화
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
 }
 
 void loop() {
-	directionControl();
-	delay(1000);
-	speedControl();
-	delay(1000);
+  directionControl();  // 모터 회전 방향 제어
+  delay(1000);         // 1초 대기
+  speedControl();      // 모터 속도 제어
+  delay(1000);         // 1초 대기
 }
 
-// This function lets you control spinning direction of motors
+// 모터 회전 방향을 제어하는 함수
 void directionControl() {
-	// Set motors to maximum speed
-	// For PWM maximum possible values are 0 to 255
-	analogWrite(enA, 255);
-	analogWrite(enB, 255);
+  // 모터 속도를 최대(PWM 값 255)로 설정
+  analogWrite(enA, 255);
+  analogWrite(enB, 255);
 
-	// Turn on motor A & B
-	digitalWrite(in1, HIGH);
-	digitalWrite(in2, LOW);
-	digitalWrite(in3, HIGH);
-	digitalWrite(in4, LOW);
-	delay(2000);
-	
-	// Now change motor directions
-	digitalWrite(in1, LOW);
-	digitalWrite(in2, HIGH);
-	digitalWrite(in3, LOW);
-	digitalWrite(in4, HIGH);
-	delay(2000);
-	
-	// Turn off motors
-	digitalWrite(in1, LOW);
-	digitalWrite(in2, LOW);
-	digitalWrite(in3, LOW);
-	digitalWrite(in4, LOW);
+  // 모터 A, B 전진 방향으로 회전
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  delay(2000); // 2초 회전
+
+  // 모터 방향 반전 (후진)
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  delay(2000); // 2초 회전
+
+  // 모터 정지
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
 }
 
-// This function lets you control speed of the motors
+// 모터 속도를 제어하는 함수
 void speedControl() {
-	// Turn on motors 방향설정
-	digitalWrite(in1, LOW);
-	digitalWrite(in2, HIGH);
-	digitalWrite(in3, LOW);
-	digitalWrite(in4, HIGH);
-	
-	// 가속
-	for (int i = 0; i < 256; i++) {
-		analogWrite(enA, i);
-		analogWrite(enB, i);
-		delay(20);
-	}
-	
-	// 감속
-	for (int i = 255; i >= 0; --i) {
-		analogWrite(enA, i);
-		analogWrite(enB, i);
-		delay(20);
-	}
-	
-	// 정지
-	digitalWrite(in1, LOW);
-	digitalWrite(in2, LOW);
-	digitalWrite(in3, LOW);
-	digitalWrite(in4, LOW);
+  // 모터 방향 설정 (후진)
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+
+  // 점점 빠르게 (가속)
+  for (int i = 0; i < 256; i++) {
+    analogWrite(enA, i); // 모터 A 속도 증가
+    analogWrite(enB, i); // 모터 B 속도 증가
+    delay(20);           // 20ms 대기
+  }
+
+  // 점점 느리게 (감속)
+  for (int i = 255; i >= 0; --i) {
+    analogWrite(enA, i); // 모터 A 속도 감소
+    analogWrite(enB, i); // 모터 B 속도 감소
+    delay(20);           // 20ms 대기
+  }
+
+  // 모터 정지
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
 }
+
 ```
 ## DC Motor with Encoder
 ![](./images/encoder.png)
@@ -611,24 +624,33 @@ void lightNumber(int numberToDisplay) {
 ## Bluetooth
 ![](./images/bluetooth.png)
 ```c
-#include<SoftwareSerial.h>
+#include <SoftwareSerial.h> // 소프트웨어 시리얼 라이브러리 포함 (디지털 핀을 이용해 시리얼 통신 가능하게 함)
+
+// Bluetooth 모듈과의 통신을 위해 디지털 핀 2(RX), 3(TX)를 사용하여 SoftwareSerial 객체 생성
 SoftwareSerial BT(2, 3);
 
 void setup() {
-  BT.begin(9600);
-  pinMode(8, OUTPUT);
+  BT.begin(9600);        // 블루투스 시리얼 통신 시작 (통신 속도: 9600bps)
+  pinMode(8, OUTPUT);    // 디지털 핀 8을 출력 모드로 설정 (LED 등 외부 장치 제어용)
 }
-void loop(){
-  if(BT.available()) {
-    int value = BT.read();
-    if(value == '1') {
-      digitalWrite(8, HIGH);
+
+void loop() {
+  // 블루투스로부터 데이터가 들어오면
+  if (BT.available()) {
+    int value = BT.read();  // 들어온 데이터를 읽음
+
+    // '1'이라는 문자가 들어오면
+    if (value == '1') {
+      digitalWrite(8, HIGH); // 핀 8에 HIGH 신호를 출력 (LED ON 등)
     }
-    if(value == '2') {
-      digitalWrite(8, LOW);
+
+    // '2'라는 문자가 들어오면
+    if (value == '2') {
+      digitalWrite(8, LOW);  // 핀 8에 LOW 신호를 출력 (LED OFF 등)
     }
   }
 }
+
 ```
 
 
